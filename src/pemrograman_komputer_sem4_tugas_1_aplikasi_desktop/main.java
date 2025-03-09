@@ -4,21 +4,45 @@
  */
 package pemrograman_komputer_sem4_tugas_1_aplikasi_desktop;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author fadil
  */
 public class main extends javax.swing.JFrame {
 
-    private double hasil = 0;
-    private String operasi = "";
-    private boolean baru = true;
+    private static final double PI = 3.14159; // Value of PI
+    private static final int MAX_HISTORY_SIZE = 10; // Maximum history limit
+    private static final String ERROR_DIVISION_BY_ZERO = "Tidak bisa dibagi dengan nol";
+    private static final String ERROR_INPUT_SECOND = "Masukkan angka kedua terlebih dahulu!";
+    private static final String ERROR_INPUT_FIRST = "Masukkan angka pertama dan pilih operasi terlebih dahulu!";
 
-    /**
-     * Creates new form main
-     */
+    // Primitive data types for calculation
+    private double result = 0.0;
+    private boolean isNewInput = true;
+
+    // String variables for storing inputs and operation
+    private String firstNumber = "";
+    private String operation = "";
+
+    // Array for storing calculation history
+    private final String[] historyArray = new String[MAX_HISTORY_SIZE];
+    private int historyIndex = 0; // Index to fill the array
+
+    // Collection for storing calculation history (more flexible)
+    private final List<String> historyList = new ArrayList<>();
+
+    // Number formatter for better display
+    private final DecimalFormat formatter = new DecimalFormat("#.########");
+
     public main() {
         initComponents();
+        resetCalculator(); // Initialize calculator state
+
     }
 
     /**
@@ -52,6 +76,9 @@ public class main extends javax.swing.JFrame {
         btn_samadengan = new javax.swing.JButton();
         btn_nol = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtRiwayat = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -216,120 +243,127 @@ public class main extends javax.swing.JFrame {
         });
         getContentPane().add(btn_nol, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 410, 128, 55));
 
+        jLabel3.setText("History");
+
+        txtRiwayat.setColumns(20);
+        txtRiwayat.setRows(5);
+        jScrollPane1.setViewportView(txtRiwayat);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 290, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap(329, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addGap(120, 120, 120))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(51, 51, 51))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 480, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(35, 35, 35)
+                .addComponent(jLabel3)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 386, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(24, Short.MAX_VALUE))
         );
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 290, 480));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 550, 480));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_satuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_satuActionPerformed
         // TODO add your handling code here:
-        tambahAngka("1");
+        addDigit("1");
     }//GEN-LAST:event_btn_satuActionPerformed
 
     private void btn_duaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_duaActionPerformed
         // TODO add your handling code here:
-        tambahAngka("2");
+        addDigit("2");
     }//GEN-LAST:event_btn_duaActionPerformed
 
     private void btn_tigaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_tigaActionPerformed
         // TODO add your handling code here:
-        tambahAngka("3");
+        addDigit("3");
 
     }//GEN-LAST:event_btn_tigaActionPerformed
 
     private void btn_menjadikan_plus_atau_minusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_menjadikan_plus_atau_minusActionPerformed
-        // TODO add your handling code here:
-        String teks = jLabel2.getText();
-        if (!teks.isEmpty()) {
-            double angka = Double.parseDouble(teks);
-            jLabel2.setText(String.valueOf(-angka));
-        }
+        toggleSign();
 
 
     }//GEN-LAST:event_btn_menjadikan_plus_atau_minusActionPerformed
 
     private void btn_persenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_persenActionPerformed
-        // TODO add your handling code here:
-        String teks = jLabel2.getText();
-        if (!teks.isEmpty()) {
-            double angka = Double.parseDouble(teks);
-            jLabel2.setText(String.valueOf(angka / 100));
-        }
+        convertToPercentage();
+
     }//GEN-LAST:event_btn_persenActionPerformed
 
     private void btn_resetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_resetActionPerformed
-        // TODO add your handling code here:
-        jLabel2.setText("0");
-        hasil = 0;
-        operasi = "";
-        baru = true;
+        resetCalculator();
+
     }//GEN-LAST:event_btn_resetActionPerformed
 
     private void btn_enamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_enamActionPerformed
-        // TODO add your handling code here:tambahAngka
-        tambahAngka("6");
+        // TODO add your handling code here:addDigit
+        addDigit("6");
 
 
     }//GEN-LAST:event_btn_enamActionPerformed
 
     private void btn_limaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_limaActionPerformed
         // TODO add your handling code here:
-        tambahAngka("5");
+        addDigit("5");
     }//GEN-LAST:event_btn_limaActionPerformed
 
     private void btn_empatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_empatActionPerformed
         // TODO add your handling code here:
-        tambahAngka("4");
+        addDigit("4");
     }//GEN-LAST:event_btn_empatActionPerformed
 
     private void btn_delapanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_delapanActionPerformed
         // TODO add your handling code here:
-        tambahAngka("8");
+        addDigit("8");
 
     }//GEN-LAST:event_btn_delapanActionPerformed
 
     private void btn_sembilanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_sembilanActionPerformed
         // TODO add your handling code here:
-        tambahAngka("9");
+        addDigit("9");
     }//GEN-LAST:event_btn_sembilanActionPerformed
 
     private void btn_tujuhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_tujuhActionPerformed
         // TODO add your handling code here:
-        tambahAngka("7");
+        addDigit("7");
     }//GEN-LAST:event_btn_tujuhActionPerformed
 
     private void btn_kaliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_kaliActionPerformed
         // TODO add your handling code here:
-        setOperasi("*");
+        setOperation("*");
 
     }//GEN-LAST:event_btn_kaliActionPerformed
 
     private void btn_tambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_tambahActionPerformed
         // TODO add your handling code here:
-        setOperasi("+");
+        setOperation("+");
 
     }//GEN-LAST:event_btn_tambahActionPerformed
 
     private void btn_bagiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_bagiActionPerformed
         // TODO add your handling code here:
-        setOperasi("/");
+        setOperation("/");
 
     }//GEN-LAST:event_btn_bagiActionPerformed
 
     private void btn_kurangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_kurangActionPerformed
         // TODO add your handling code here:
-        setOperasi("-");
+        addDigit("-");
 
     }//GEN-LAST:event_btn_kurangActionPerformed
 
@@ -342,19 +376,13 @@ public class main extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_komaActionPerformed
 
     private void btn_samadenganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_samadenganActionPerformed
-        // TODO add your handling code here:
-        String teks = jLabel2.getText();
-        if (!teks.isEmpty()) {
-            double angka = Double.parseDouble(teks);
-            hitung(angka);
-            operasi = "";
-            baru = true;
-        }
+        performEquals();
+
     }//GEN-LAST:event_btn_samadenganActionPerformed
 
     private void btn_nolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_nolActionPerformed
         // TODO add your handling code here:
-        tambahAngka("0");
+        addDigit("0");
     }//GEN-LAST:event_btn_nolActionPerformed
 
     /**
@@ -414,49 +442,210 @@ public class main extends javax.swing.JFrame {
     private javax.swing.JButton btn_tujuh;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea txtRiwayat;
     // End of variables declaration//GEN-END:variables
-private void tambahAngka(String angka) {
-        if (baru) {
-            jLabel2.setText("");
-            baru = false;
-        }
-        jLabel2.setText(jLabel2.getText() + angka);
+
+    private void resetCalculator() {
+        jLabel2.setText("0");
+        result = 0.0;
+        operation = "";
+        firstNumber = "";
+        isNewInput = true;
     }
 
-    private void setOperasi(String op) {
-        String teks = jLabel2.getText();
-        if (!teks.isEmpty()) {
-            double angka = Double.parseDouble(teks);
-            if (!operasi.isEmpty()) {
-                hitung(angka);
-            } else {
-                hasil = angka;
+    private void setOperation(String op) {
+        String displayText = jLabel2.getText();
+
+        // Validate display is not empty
+        if (!displayText.isEmpty()) {
+            try {
+                double number = Double.parseDouble(displayText);
+
+                // Check if we need to perform calculation first
+                if (!operation.isEmpty()) {
+                    calculate(number);
+                } else {
+                    result = number;
+                }
+
+                // Store first number for history
+                firstNumber = formatter.format(result);
+
+                // Set new operation and prepare for next input
+                operation = op;
+                isNewInput = true;
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Format angka tidak valid", "Error", JOptionPane.ERROR_MESSAGE);
             }
-            operasi = op;
-            baru = true;
         }
     }
 
-    private void hitung(double angka) {
-        switch (operasi) {
+    private void calculate(double number) {
+        switch (operation) {
             case "+":
-                hasil += angka;
+                result += number; // Addition operator
                 break;
             case "-":
-                hasil -= angka;
+                result -= number; // Subtraction operator
                 break;
             case "*":
-                hasil *= angka;
+                result *= number; // Multiplication operator
                 break;
             case "/":
-                if (angka != 0) {
-                    hasil /= angka;
+                // Division operator with zero check
+                if (number != 0) {
+                    result /= number;
                 } else {
-                    javax.swing.JOptionPane.showMessageDialog(this, "Tidak bisa dibagi dengan nol", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, ERROR_DIVISION_BY_ZERO, "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
                 break;
+            default:
+                // No operation selected
+                result = number;
+                break;
         }
-        jLabel2.setText(String.valueOf(hasil));
+
+        // Format and display result
+        jLabel2.setText(formatter.format(result));
     }
+
+    private void displayHistory() {
+        StringBuilder historyText = new StringBuilder();
+
+        // Display array history (limited to MAX_HISTORY_SIZE)
+        historyText.append("===== Array History =====\n");
+        for (int i = 0; i < historyIndex; i++) {
+            historyText.append(historyArray[i]).append("\n");
+        }
+
+        // Display ArrayList history (unlimited)
+        historyText.append("\n===== Collection History =====\n");
+        for (String entry : historyList) {
+            historyText.append(entry).append("\n");
+        }
+
+        // Update text area
+        txtRiwayat.setText(historyText.toString());
+    }
+
+    private void addToHistory(String calculation) {
+        // Add to array (with bounds check)
+        if (historyIndex < MAX_HISTORY_SIZE) {
+            historyArray[historyIndex] = calculation;
+            historyIndex++;
+        } else {
+            // Shift array elements to make room
+            for (int i = 0; i < MAX_HISTORY_SIZE - 1; i++) {
+                historyArray[i] = historyArray[i + 1];
+            }
+            historyArray[MAX_HISTORY_SIZE - 1] = calculation;
+        }
+
+        // Add to ArrayList (no size limit)
+        historyList.add(calculation);
+
+        // Update history display
+        displayHistory();
+    }
+
+    private void performEquals() {
+        String secondNumber = jLabel2.getText();
+
+        // Validate inputs
+        if (secondNumber.isEmpty()) {
+            JOptionPane.showMessageDialog(this, ERROR_INPUT_SECOND, "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (firstNumber.isEmpty()) {
+            JOptionPane.showMessageDialog(this, ERROR_INPUT_FIRST, "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            // Convert input to double
+            double secondNum = Double.parseDouble(secondNumber);
+
+            // Perform calculation
+            calculate(secondNum);
+
+            // Format history entry: firstNumber operation secondNumber = result
+            String historyEntry = firstNumber + " " + operation + " " + secondNumber + " = " + formatter.format(result);
+
+            // Add to history
+            addToHistory(historyEntry);
+
+            // Reset for next calculation
+            firstNumber = formatter.format(result);
+            operation = "";
+            isNewInput = true;
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Format angka tidak valid", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void toggleSign() {
+        String text = jLabel2.getText();
+        if (!text.isEmpty() && !text.equals("0")) {
+            try {
+                double number = Double.parseDouble(text);
+                jLabel2.setText(formatter.format(-number));
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Format angka tidak valid", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+        private void convertToPercentage() {
+        String text = jLabel2.getText();
+        if (!text.isEmpty()) {
+            try {
+                double number = Double.parseDouble(text);
+                jLabel2.setText(formatter.format(number / 100));
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Format angka tidak valid", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void addDecimalPoint() {
+        String text = jLabel2.getText();
+
+        // If starting new input, set to "0."
+        if (isNewInput) {
+            jLabel2.setText("0.");
+            isNewInput = false;
+            return;
+        }
+
+        // Only add decimal point if not already present
+        if (!text.contains(".")) {
+            jLabel2.setText(text + ".");
+        }
+    }
+
+    private void addDigit(String digit) {
+        if (isNewInput) {
+            jLabel2.setText("");
+            isNewInput = false;
+        }
+
+        // Prevent multiple zeros at beginning
+        if (jLabel2.getText().equals("0") && digit.equals("0")) {
+            return;
+        }
+
+        // Replace single zero with digit
+        if (jLabel2.getText().equals("0") && !digit.equals("0")) {
+            jLabel2.setText(digit);
+            return;
+        }
+
+        jLabel2.setText(jLabel2.getText() + digit);
+    }
+
 }
